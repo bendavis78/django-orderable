@@ -10,6 +10,11 @@
             orderHeader.hide();
             orderCells.hide();
             
+            $('div#changelist tbody tr th').hover(function(){
+              $(this).css({cursor:'move'});
+            }, function(){
+              $(this).css({cursor:'normal'});
+            }).attr('title', 'drag to re-order');
             $('div#changelist tbody').sortable({
                 items: 'tr',
                 handle: 'th:first',
