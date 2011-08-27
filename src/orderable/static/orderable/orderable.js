@@ -61,12 +61,13 @@
                     inline.find('td.original').hide();
                     inline.find('input[name$="-order"]').closest('td').hide();
                     inline.find('tbody tr.has_original').removeClass('has_original');
-                    inline.find('tbody tr').css('cursor', 'move');
-                    
+                    // Only allow ordering on existing objects
+                    var items = inline.find('tr:visible:not(.add-row,.empty-form) td.original input[type=hidden][name$=-id][value!=]').parents('tr')
+                    items.css('cursor', 'move')
                     inline.find('tbody').sortable({
-                        'update': function (event, ui) {
-                            var rows = inline.find('tbody tr');
-                            rows.each(function (i) {
+                        items: items,
+                        update: function (event, ui) {
+                            items.each(function (i) {
                                 var row = $(this),
                                     orderField = row.find('input[name$="-order"]');
                                 orderField.val(i + 1);
@@ -79,11 +80,14 @@
                 // Stacked Inlines
                 else {
                     inline.find('.form-row.order').hide();
-                    inline.find('.inline-group h3').css('cursor', 'move');
-                    
+                    // Only allow ordering on existing objects
+                    var items = inline.find('.inline-group input[type=hidden][name$=-id][value!=]').parents('.inline-related')
+                    console.log(items)
+                    items.find('h3').css('cursor','move')
                     inline.find('.inline-group').sortable({
-                        'handle': 'h3',
-                        'update': function (event, ui) {
+                        items: items,
+                        handle: 'h3',
+                        update: function (event, ui) {
                             var forms = inline.find('.inline-related');
                             forms.each(function (i) {
                                 var form = $(this),
