@@ -1,3 +1,16 @@
+<script type="text/javascript">
+  {% with inline_admin_formset.opts as inline %}
+  {% if inline.order_field %}
+  if (!window.INLINE_ORDERING_FIELDS) {
+    window.INLINE_ORDERING_FIELDS = {}
+  }
+  window.INLINE_ORDERING_FIELDS['{{ inline_admin_formset.formset.prefix }}'] = {
+    name: '{{ inline.order_field }}',
+    label: '{{ inline.order_field_label|capfirst }}'
+  }
+  {% endif %}
+  {% endwith %}
+</script>
 <div class="orderable">
   {% include "admin/edit_inline/tabular.html" %}
 </div>

@@ -3,8 +3,8 @@
     $(document).ready(function (event) {
         
         if ($('body.change-list').length > 0) {
-            var orderHeader = $('thead th:contains(Order)'),
-                orderFields = $('input[name$="-order"]'),
+            var orderHeader = $('thead th:contains('+ORDERING_FIELD_LABEL+')'),
+                orderFields = $('input[name$="-'+ORDERING_FIELD+'"]'),
                 orderCells = orderFields.closest('td');
             
             orderHeader.hide();
@@ -23,7 +23,7 @@
                     
                     rows.each(function (i) {
                         var row = $(this),
-                            orderField = row.find('input[name$="-order"]'),
+                            orderField = row.find('input[name$="-'+ORDERING_FIELD+'"]'),
                             oldValue = orderField.val(),
                             newValue = i + 1;
                         
@@ -53,23 +53,27 @@
         if ($('body.change-form').length > 0) {
             $('.orderable').each(function (i) {
                 var inline = $(this);
+                var prefix = $(this).find('.inline-group').attr('id').replace('-group', '');
                 
                 // Tabular Inlines
                 if (inline.is(':has(.tabular)')) {
                     // Hide the unnecessary, ordering fields.
-                    inline.find('th:contains(Order)').hide();
+                    inline.find('th:contains('+INLINE_ORDERING_FIELDS[prefix].label+')').hide();
                     inline.find('td.original').hide();
-                    inline.find('input[name$="-order"]').closest('td').hide();
+                    inline.find('input[name$="-'+INLINE_ORDERING_FIELDS[prefix].name+'"]').closest('td').hide();
                     inline.find('tbody tr.has_original').removeClass('has_original');
                     // Only allow ordering on existing objects
-                    var items = inline.find('tr:visible:not(.add-row,.empty-form) td.original input[type=hidden][name$=-id][value!=]').parents('tr')
+                    var selector = 'tr:visible:not(.add-row,.empty-form) td.original input[type=hidden][name$=-id][value!=]';
+                    var items = inline.find(selector).parents('tr')
                     items.css('cursor', 'move')
                     inline.find('tbody').sortable({
                         items: items,
                         update: function (event, ui) {
-                            items.each(function (i) {
+                            $.fn.reverse = [].reverse // quick reverse hack
+                            var rows = inline.find(selector).parents('tr').reverse()
+                            rows.each(function (i) {
                                 var row = $(this),
-                                    orderField = row.find('input[name$="-order"]');
+                                    orderField = row.find('input[name$="-'+INLINE_ORDERING_FIELDS[prefix].name+'"]');
                                 orderField.val(i + 1);
                             });
                             rows.filter(':even').addClass('row1').removeClass('row2');
@@ -79,19 +83,20 @@
                 }
                 // Stacked Inlines
                 else {
-                    inline.find('.form-row.order').hide();
+                    inline.find('.form-row.'+INLINE_ORDERING_FIELDS[prefix].name).hide();
                     // Only allow ordering on existing objects
-                    var items = inline.find('.inline-group input[type=hidden][name$=-id][value!=]').parents('.inline-related')
-                    console.log(items)
+                    var selector = '.inline-group input[type=hidden][name$=-id][value!=]';
+                    var items = inline.find(selector).parents('.inline-related')
                     items.find('h3').css('cursor','move')
                     inline.find('.inline-group').sortable({
                         items: items,
                         handle: 'h3',
                         update: function (event, ui) {
-                            var forms = inline.find('.inline-related');
+                            $.fn.reverse = [].reverse // quick reverse hack
+                            var forms = inline.find(selector).parents('.inline-related').reverse()
                             forms.each(function (i) {
                                 var form = $(this),
-                                    orderField = form.find('input[name$="order"]');
+                                    orderField = form.find('input[name$="'+INLINE_ORDERING_FIELDS[prefix].name+'"]');
                                 orderField.val(i + 1);
                             });
                         }
