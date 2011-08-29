@@ -19,7 +19,7 @@ class OrderableAdmin(admin.ModelAdmin):
         self.order_field = getattr(model, 'ordering_field')
         self.exclude = tuple(self.exclude or ()) + (self.order_field,)
         if not self.ordering:
-            self.ordering = (self.order_field,)
+            self.ordering = model._meta.ordering
 
         super(OrderableAdmin, self).__init__(model, *args, **kwargs)
         
