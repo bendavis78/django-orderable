@@ -59,9 +59,10 @@
                 if (inline.is(':has(.tabular)')) {
                     // Hide the unnecessary, ordering fields.
                     inline.find('th:contains('+INLINE_ORDERING_FIELDS[prefix].label+')').hide();
-                    inline.find('td.original').hide();
                     inline.find('input[name$="-'+INLINE_ORDERING_FIELDS[prefix].name+'"]').closest('td').hide();
                     inline.find('tbody tr.has_original').removeClass('has_original');
+                    // Make sure first TH is colspan=2
+                    inline.find('th:visible:first').attr('colspan','2');
                     // Only allow ordering on existing objects
                     var selector = 'tr:visible:not(.add-row,.empty-form) td.original input[type=hidden][name$=-id][value!=]';
                     var items = inline.find(selector).parents('tr')
